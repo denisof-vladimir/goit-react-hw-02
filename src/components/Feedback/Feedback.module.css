@@ -1,0 +1,12 @@
+.feedbackBox{
+    /* margin-left: 0px; */
+    display: block;
+    justify-content: left;
+}
+.feedbackP {
+    color: #140707;
+   
+    margin: 0;
+    font-size: 30;
+
+}
