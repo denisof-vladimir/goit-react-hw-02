@@ -12,52 +12,50 @@ function GetLocalStorage (key) {
     if (saved !== null) {
       return JSON.parse(saved);
     }
-    return [0,0,0];
+    return {good:0,
+            neutral:0,
+            bad:0};
 }
 
 function App() {
-  const getFeedBack=GetLocalStorage ("feedback-cafe");
-  const [clickGood, setClickGood]= useState(getFeedBack[0]);
-  const [clickNeutral, setClickNeutral]= useState(getFeedBack[1]);
-  const [clickBad, setClickBad]= useState(getFeedBack[2]);
+
+  const [clicks, setClicks]= useState(GetLocalStorage ("feedback-cafe"));
 
   const handleGood = () => {
-    setClickGood(clickGood+1);
-    }
+    setClicks({...clicks, good: clicks.good + 1  });
+  };
+
+
   const handleNeutral = () => {
-    setClickNeutral(clickNeutral+1);
+    setClicks({...clicks, neutral: clicks.neutral + 1  });
     }
   const handleBad = () => {
-    setClickBad(clickBad+1);
+    setClicks({...clicks, bad: clicks.bad + 1  });
   }
   const handleReset = () => {
-    setClickGood(0);
-    setClickNeutral(0);
-    setClickBad(0);
-  }
-  const totalFeedback =  clickGood+ clickNeutral+ clickBad;
+    setClicks({good:0,
+               neutral:0,
+               bad:0});
+    }
+
+  let positive = 0;
+  const totalFeedback =  clicks.good+ clicks.neutral+ clicks.bad;
+  if (totalFeedback>0) {
+    positive = Math.round((clicks.good/ totalFeedback) * 100);}
+ 
   useEffect(() => {
-     window.localStorage.setItem("feedback-cafe", JSON.stringify([
-        clickGood, clickNeutral, clickBad]));
-        });
+     window.localStorage.setItem("feedback-cafe", JSON.stringify(clicks));      });
+
   return (
     <div className="app-box">
       <Description  />
-      <div className={css.optionsBox}>
-        <Options text="Good" value={clickGood} onChange={handleGood}/>
-        <Options text="Neutral" value={clickNeutral} onChange={handleNeutral} />
-        <Options text="Bad" value={clickBad} onChange={handleBad} />
-        {totalFeedback > 0 && (<Options text="Reset" onChange={handleReset} />)}
-      </div>  
+ 
+      <Options onChange={[handleGood,handleNeutral,handleBad,handleReset]}
+               totalFeedback={totalFeedback}/>
       
-        {totalFeedback==0 &&  (<Notification/>)} 
+      {totalFeedback==0 &&  (<Notification/>) ||
+               <Feedback clicks={clicks} totalFeedback={totalFeedback} positive={positive} /> } 
          
-        {totalFeedback > 0 && (    
-              <Feedback Good={clickGood}
-                    Neutral={clickNeutral}
-                    Bad={clickBad} 
-                    totalFeedback={totalFeedback} />)}
-     
     </div>
   );
 }
