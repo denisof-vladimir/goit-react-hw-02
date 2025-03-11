@@ -21,17 +21,10 @@ function App() {
 
   const [clicks, setClicks]= useState(GetLocalStorage ("feedback-cafe"));
 
-  const handleGood = () => {
-    setClicks({...clicks, good: clicks.good + 1  });
-  };
+  const handleFeedBack = (ev) => {
+    setClicks({...clicks, [ev]: clicks[ev] + 1  });
+   };
 
-
-  const handleNeutral = () => {
-    setClicks({...clicks, neutral: clicks.neutral + 1  });
-    }
-  const handleBad = () => {
-    setClicks({...clicks, bad: clicks.bad + 1  });
-  }
   const handleReset = () => {
     setClicks({good:0,
                neutral:0,
@@ -44,17 +37,18 @@ function App() {
     positive = Math.round((clicks.good/ totalFeedback) * 100);}
  
   useEffect(() => {
-     window.localStorage.setItem("feedback-cafe", JSON.stringify(clicks));      });
+     window.localStorage.setItem("feedback-cafe", JSON.stringify(clicks));}, [clicks]);
 
   return (
     <div className="app-box">
       <Description  />
  
-      <Options onChange={[handleGood,handleNeutral,handleBad,handleReset]}
+      <Options onChange={handleFeedBack} onReset={handleReset}
                totalFeedback={totalFeedback}/>
       
-      {totalFeedback==0 &&  (<Notification/>) ||
-               <Feedback clicks={clicks} totalFeedback={totalFeedback} positive={positive} /> } 
+      {totalFeedback==0 &&  (<Notification/>)}
+      {totalFeedback > 0 &&  
+        <Feedback clicks={clicks} totalFeedback={totalFeedback} positive={positive} /> } 
          
     </div>
   );
